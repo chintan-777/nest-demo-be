@@ -26,4 +26,39 @@ export class UserService {
       throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     }
   }
+
+  async updateUser(id: string, user: User) {
+    let localUser = await this.findUser(id);
+    if (!localUser) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
+    localUser = { ...localUser._doc, ...user };
+    try {
+      let { _id, ...data } = localUser;
+      await this.userModal.updateOne({ _id: _id }, localUser);
+      return localUser;
+    } catch (error) {
+      throw new HttpException('Bad Request', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async findUser(id: string) {
+    let user;
+    try {
+      user = await this.userModal.findById(id);
+      return user;
+    } catch (err) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
+  }
+
+  async deleteUser(id: string) {
+    let localUser;
+    try {
+      localUser = await this.userModal.findByIdAndDelete(id);
+      return localUser;
+    } catch (err) {
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+    }
+  }
 }
