@@ -1,12 +1,11 @@
+import { AuthModule } from './auth/auth.module';
 import { Module } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import 'dotenv/config';
-import { UserModule } from './user/user.module';
 
 @Module({
-  imports: [UserModule, MongooseModule.forRoot(process.env.DB_URI)],
+  imports: [EventEmitterModule.forRoot(), AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
