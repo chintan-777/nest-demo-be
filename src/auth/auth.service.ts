@@ -11,6 +11,7 @@ import { JwtService } from '@nestjs/jwt';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import * as bcrypt from 'bcrypt';
+import { AuthCredentials } from './dto/auth-credential.dto';
 
 @Injectable()
 export class AuthService {
@@ -39,5 +40,22 @@ export class AuthService {
     } else {
       throw new BadRequestException('password mismatched');
     }
+  }
+
+  async signIn(reqBody: AuthCredentials): Promise<any> {
+    const user = await this.userRepository.validateUserandPassword(reqBody);
+    return user;
+  }
+
+  async createToken(user: User) {
+    const payload: User = user;
+    const accessToken = await this.jwtService.sign(payload.toJSON());
+    return accessToken;
+  }
+
+  async getUser(email: string): Promise<User> {
+    const user = this.authModel.findOne({ email });
+
+    return user.select({ password: 0 });
   }
 }
